@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,8 +24,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 public class RestitutionAgent {
 	@Autowired
 	private RestTemplate restTemplate;
-		@GetMapping("/restituer_transfert")
-		public String restitution(@RequestBody Transfert transfert ) {
+		@GetMapping("/restituer_transfert/{id}")
+		public String restitution(@PathVariable Long id) {
+			Transfert transfert=this.restTemplate.getForObject(
+					 "http://Gestion/get_Transfert/"+id,Transfert.class);
 			if(transfert.getEtat()!=EtatTransfert.à_servir & transfert.getEtat()!=EtatTransfert.débloqué_a_servir) {
 				return "";
 			}
@@ -34,9 +37,9 @@ public class RestitutionAgent {
 			if(transfert.getDate_de_deblocage()!=dateNow) {
 				return "Le transfert est bloqué";
 			}*/
-			Long id= transfert.getAgent().getIdClient();
+			Long idAgent= transfert.getAgent().getIdClient();
 		      Compte compte=this.restTemplate.getForObject(
-					 "http://Gestion/get_client_compte/"+id,Compte.class);
+					 "http://Gestion/get_client_compte/"+idAgent,Compte.class);
 		      compte.setMontant(compte.getMontant()+transfert.getMontant_operation());
 		      modifySolde(compte);
 		      transfert.setEtat(EtatTransfert.restitue);

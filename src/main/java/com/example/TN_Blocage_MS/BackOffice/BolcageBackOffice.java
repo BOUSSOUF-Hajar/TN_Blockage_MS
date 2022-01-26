@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,9 +23,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 public class BolcageBackOffice {
 	@Autowired
 	private RestTemplate restTemplate;
-		@GetMapping("/bloquer_transfert")
-		public String bloquerTransfert(@RequestBody Transfert transfert) {
-			
+		@GetMapping("/bloquer_transfert/{id}")
+		public String bloquerTransfert(@PathVariable Long id) {
+			Transfert transfert=this.restTemplate.getForObject(
+					 "http://Gestion/get_Transfert/"+id,Transfert.class);
 			if(transfert.getEtat()!=EtatTransfert.à_servir) {
 				return "Vous ne pouvez pas bloqué ce transfert";
 			}
@@ -34,9 +36,10 @@ public class BolcageBackOffice {
 			modifyTransfert(transfert);
 			return "Le transfert est bloqué.";
 		}
-		@GetMapping("/debloquer_transfert")
-		public String debloquerTransfert(@RequestBody Transfert transfert) {
-			
+		@GetMapping("/debloquer_transfert/{id}")
+		public String debloquerTransfert(@PathVariable Long id) {
+			Transfert transfert=this.restTemplate.getForObject(
+					 "http://Gestion/get_Transfert/"+id,Transfert.class);
 			if(transfert.getEtat()!=EtatTransfert.bloque) {
 				return "Le transfert n'est pas bloqué.";
 			}

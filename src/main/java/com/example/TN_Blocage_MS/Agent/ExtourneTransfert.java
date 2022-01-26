@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -22,20 +23,23 @@ import com.example.TN_Blocage_MS.twilio.SMSController;
 public class ExtourneTransfert {
 	@Autowired
 	  private RestTemplate restTemplate;
-	@GetMapping("/extourner_transfert")
-	public String extourne(@RequestBody Transfert transfert) {
+	@GetMapping("/extourner_transfert/{id}")
+	public String extourne(@PathVariable Long id) {
+		Transfert transfert=this.restTemplate.getForObject(
+				 "http://Gestion/get_Transfert/"+id,Transfert.class);
 		if(transfert.getEtat()!=EtatTransfert.à_servir) {
 			return "";
 		}
-		 LocalDate date = LocalDate.now();
-		@SuppressWarnings("deprecation")
-		Date dateNow=new Date(date.toString());
+		 
+		Date dateNow=new Date();
+		System.out.print("date now"+dateNow);
+		System.out.print("Date transfert"+transfert.getDate_demission().getDate());
 		if(transfert.getDate_demission().getDate()!=dateNow.getDate()) {
 			return "Vous ne pouvez pas extourner ce transfert";
 		}
-		 Long id= transfert.getAgent().getIdClient();
+		 Long idAgent= transfert.getAgent().getIdClient();
 		 Compte compte=this.restTemplate.getForObject(
-				 "http://Gestion/get_client_compte/"+id,Compte.class);
+				 "http://Gestion/get_client_compte/"+idAgent,Compte.class);
 		 compte.setMontant(compte.getMontant()+transfert.getMontant_operation());
 		 modifySolde(compte);
 		 transfert.setEtat(EtatTransfert.extourne);
@@ -58,7 +62,7 @@ public class ExtourneTransfert {
 
 	    // build the request
 	    HttpEntity<Compte> entity = new HttpEntity<>(compte, headers);
-
+	    System.out.print("from function "+compte.getIdCompte());
 	    // send PUT request to update compte
 	    this.restTemplate.put("http://Gestion/update_Compte/{id}", entity, compte.getIdCompte());
 	}
