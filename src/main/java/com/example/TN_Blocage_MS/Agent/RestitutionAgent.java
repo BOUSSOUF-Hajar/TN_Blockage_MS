@@ -46,7 +46,7 @@ public class RestitutionAgent {
 		      
 		      modifyTransfert(transfert);
 		      if(transfert.isNotification()) {
-					 sendSMS(transfert.getEmetteur().getTelephone(),"Votre transfert national a été extouné./n Le référence : "+transfert.getReference());
+					 sendSMS(transfert.getEmetteur().getTelephone(),"Votre transfert national a été restitué./n Le référence : "+transfert.getReference());
 						
 				 }  
 			
