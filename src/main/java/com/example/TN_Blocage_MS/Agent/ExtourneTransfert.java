@@ -27,7 +27,7 @@ public class ExtourneTransfert {
 	public String extourne(@PathVariable Long id) {
 		Transfert transfert=this.restTemplate.getForObject(
 				 "http://Gestion/get_Transfert/"+id,Transfert.class);
-		if(transfert.getEtat()!=EtatTransfert.à_servir || transfert.getEtat()!=EtatTransfert.débloqué_a_servir) {
+		if(transfert.getEtat()!=EtatTransfert.à_servir && transfert.getEtat()!=EtatTransfert.débloqué_a_servir) {
 			return "";
 		}
 		 
