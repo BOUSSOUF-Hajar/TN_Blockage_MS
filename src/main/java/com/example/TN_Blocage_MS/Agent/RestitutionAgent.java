@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,11 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 public class RestitutionAgent {
 	@Autowired
 	private RestTemplate restTemplate;
+	
+		@GetMapping("/test")
+		public ResponseEntity<String> testNode() {
+			return this.restTemplate.getForEntity("http://user-service", String.class);
+		}
 		@GetMapping("/restituer_transfert/{id}")
 		public String restitution(@PathVariable Long id) {
 			Transfert transfert=this.restTemplate.getForObject(
@@ -47,7 +53,7 @@ public class RestitutionAgent {
 		      modifyTransfert(transfert);
 		      if(transfert.isNotification()) {
 					 sendSMS(transfert.getEmetteur().getTelephone(),"Votre transfert national a été restitué./n Le référence : "+transfert.getReference());
-						
+						 
 				 }  
 			
 			
